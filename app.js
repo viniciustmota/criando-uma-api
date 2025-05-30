@@ -34,3 +34,17 @@ app.get("/produtos", (req, res) => {
         }
     })
 });
+
+// Método POST - Incluir um novo produto
+app.post("/produtos", (requisicao, resposta) => {
+    db.run("INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?",
+        [requisicao.body.nome, requisicao.body.preco, requisicao.body.estoque],
+        (erro, resultado) => {
+            if(erro) {
+                resposta.status(400).json({"erro": erro.message});
+            }else{
+                resposta.status(201).json({"incluido": true});
+            }
+        }
+     )
+})
