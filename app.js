@@ -1,6 +1,8 @@
+const sqlite3 = require('sqlite3');
+const cors = require('cors');
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 8080;
 
 app.use(express.json());
 app.use(cors());
@@ -28,16 +30,16 @@ app.get("/produtos", (req, res) => {
     const comando = "SELECT * FROM produtos";
     db.all(comando, [], (erro, resultado) => {
         if (erro) {
-            res.statusCode(400).json({"erro" : erro.message});
+            res.status(400).json({"erro" : erro.message});
         } else {
-            res.statusCode(200).json(resultado);
+            res.status(200).json(resultado);
         }
     })
 });
 
 // Método POST - Incluir um novo produto
 app.post("/produtos", (requisicao, resposta) => {
-    db.run("INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?",
+    db.run("INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?)",
         [requisicao.body.nome, requisicao.body.preco, requisicao.body.estoque],
         (erro, resultado) => {
             if(erro) {
