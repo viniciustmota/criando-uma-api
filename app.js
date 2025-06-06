@@ -26,6 +26,7 @@ const db = new sqlite3.Database("produtos.db", (erro) => {
     }
 })
 
+// Método GET - Obter todos os produtos cadastrados
 app.get("/produtos", (req, res) => {
     const comando = "SELECT * FROM produtos";
     db.all(comando, [], (erro, resultado) => {
@@ -35,6 +36,19 @@ app.get("/produtos", (req, res) => {
             res.status(200).json(resultado);
         }
     })
+});
+
+// Método GET  para obter os dados de um produto específico
+app.get("/produtos/:id", (requisicao, resposta)=> {
+    db.get("SELECT * FROM produtos WHERE id = ?", [requisicao.params.id],
+        (erro, resultado) => {
+            if(erro){
+                resposta.status(404).json({"erro": erro.message});
+            }else{
+                resposta.status(200).json({resultado});
+            }
+        }
+    )
 });
 
 // Método POST - Incluir um novo produto
@@ -50,3 +64,30 @@ app.post("/produtos", (requisicao, resposta) => {
         }
      )
 })
+
+// Método PUT - Alterar os dados de um produto
+app.put("/produtos/:id", (requisicao, resposta) => {
+    db.run("UPDATE produtos SET nome = ?, preco = ?, estoque = ? WHERE id = ?",
+    [requisicao.body.nome, requisicao.body.preco, requisicao.body.estoque, requisicao.params.id],
+    (erro, resultado) => {
+        if(erro){
+            resposta.status(400).json({"erro": erro.massage});
+        }else{
+            resposta.status(200).json({"alterado": true});
+        }
+    }
+    )
+})
+
+// Método DELETE 
+app.delete("/produtos/:id", (requisicao, resposta) => {
+    db.run("DELETE FROM produtos WHERE id = ?", [requisicao.params.id],
+    (erro) => {
+        if(erro){
+            resposta.status(404).json({"erro": erro.message})
+        }else{
+            resposta.status(200).json({"excluido": true});
+        }
+    }
+)
+});
